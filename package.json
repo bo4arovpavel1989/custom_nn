@@ -1,0 +1,22 @@
+{
+  "name": "custom_nn",
+  "version": "1.0.0",
+  "description": "custom_nn",
+  "main": "Netconstructor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bo4arovpavel1989/custom_nn.git"
+  },
+  "author": "bo4arovpavel1989",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bo4arovpavel1989/custom_nn/issues"
+  },
+  "homepage": "https://github.com/bo4arovpavel1989/custom_nn#readme",
+  "dependencies": {
+    "seed-random": "^2.2.0"
+  }
+}
