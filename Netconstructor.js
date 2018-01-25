@@ -80,16 +80,29 @@ NeuroNet.prototype.train = function(data){
 	for (let w in this.weights){
 		weight_deltas[w] = 0;
 	}
-	//start calculation first hidden layer. coz it always exists
+	
 	for (var {input, output} of data) {
-	  for (let j = 0; j < this.options.hidden_size; j++){
+		
+	//start calculation first hidden layer. coz it always exists
+	for (let j = 0; j < this.options.hidden_size; j++){
 		var h_input=0;
 		for (let k =0; k < input.length; k++){
 			h_input += this.weights[`i${k}_h0_${j}`]
 		}	
 		h_input += this.weights[`bias_h0_${j}`];
 		nodes[`h0_${j}`] = activation[this.options.activation](h_input);  
-	  }           
+	}  
+
+	//start calculation other hidden layer.
+	for (j = 0; j < this.options.hidden - 1; j++)
+		for (k = 0; k < this.options.hidden_size; k++){
+			var h_input = 0;
+			for (m = 0; m < this.options.hidden_size; m++){
+				h_input += this.weights[`h${j}_${m}_h${j+1}_${k}`];
+			}
+			h_input += this.weights[`bias_h${j+1}_${k}`];
+			nodes[`h${j+1}_${k}`] = activation[this.options.activation](h_input);
+		}
     }
 	console.log(nodes);
     return weight_deltas;
