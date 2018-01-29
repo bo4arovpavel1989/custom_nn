@@ -76,6 +76,7 @@ NeuroNet.prototype.getInitialWeights = function (options){
 NeuroNet.prototype.train = function(data){
 	var weight_deltas = {};
 	var nodes = {};
+	var inputs = {};
 	
 	for (let w in this.weights){
 		weight_deltas[w] = 0;
@@ -90,6 +91,7 @@ NeuroNet.prototype.train = function(data){
 				h_input += this.weights[`i${k}_h0_${j}`]*input[k];
 			}	
 			h_input += this.weights[`bias_h0_${j}`];
+			inputs[`h0_${j}`] = h_input;
 			nodes[`h0_${j}`] = activation[this.options.activation](h_input);  
 		}  
 
@@ -101,21 +103,52 @@ NeuroNet.prototype.train = function(data){
 					h_input += this.weights[`h${j}_${m}_h${j+1}_${k}`]*nodes[`h${j}_${m}`];
 				}
 				h_input += this.weights[`bias_h${j+1}_${k}`];
+				inputs[`h${j+1}_${k}`] = h_input;
 				nodes[`h${j+1}_${k}`] = activation[this.options.activation](h_input);
 			}
 		}	
 		
 		//start calculation output layer.
-		for (let j = 0; j < this.options.output; j++) {
+		for (let j = 0; j < output.length; j++) {
 			let o_input = 0;
 			for (let k = 0; k < this.options.hidden_size; k++){
 				o_input += this.weights[`h${this.options.hidden - 1}_${k}_o${j}`]*nodes[`h${this.options.hidden - 1}_${k}`];
 			}
 			o_input += this.weights[`bias_o${j}`];
+			inputs[`o${j}`] = o_input;
 			nodes[`o${j}`] = activation[this.options.activation](o_input);
 		}
+		
+		//calculationg deltas for output and last hidden layer
+		var o_delta = [];
+		var h_delta={};
+		var avg_delta={};
+		
+		output.forEach((o,index)=>{
+			o_delta[index] = (o - nodes[`o${index}`])*activation[`derivative_${this.options.activation}`](inputs[`o${index}`]);
+		});
+		
+		
+		for (let j = 0; j < output.length; j++){
+			weight_deltas[`bias_o${j}`] += o_delta[j];
+			for (let k = 0; k < this.options.hidden_size; k++){
+				
+				if(isNaN(h_delta[`h${this.options.hidden - 1}_${k}`])) h_delta[`h${this.options.hidden - 1}_${k}`] = 0;
+				
+				weight_deltas[`h${this.options.hidden - 1}_${k}_o${j}`] += nodes[`h${this.options.hidden - 1}_${k}`]*o_delta[j];
+				
+				h_delta[`h${this.options.hidden - 1}_${k}`] += activation[`derivative_${this.options.activation}`](inputs[`h${this.options.hidden - 1}_${k}`]) * o_delta[j];
+			}
+		}
+		
+		console.log(h_delta);
+		
+		for (let j = this.options.hidden - 1; j >= 0; j--){
+			
+		}
+		
     }
-	console.log(nodes);
+	
     return weight_deltas;
 }
 
