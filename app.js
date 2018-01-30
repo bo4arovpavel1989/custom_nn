@@ -8,19 +8,15 @@ var data = [
     {input: [1, 1], output: [0]},
 ]
 
-neuro.init({hidden:4});
+neuro.init();
 neuro.train(data);
-
-var calculateResults = () =>
-    R.mean(data.map(({input: [i1, i2], output: y}) => Math.pow(y - neuro.nn([i1, i2]), 2)));
 
 var outputResults = () => 
     data.forEach((item) => 
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.nn(item.input)} (expected ${item.output})`));
 
 
-R.times(() => neuro.train(data), 999999)
-				 
-calculateResults();
+R.times(() => neuro.train(data), 99)
+
 
 outputResults(); 
