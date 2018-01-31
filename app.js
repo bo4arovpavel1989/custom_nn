@@ -9,14 +9,13 @@ var data = [
 ]
 
 neuro.init();
-neuro.train(data);
 
 var outputResults = () => 
     data.forEach((item) => 
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.nn(item.input)} (expected ${item.output})`));
 
 
-R.times(() => neuro.train(data), 99)
+R.times(() => neuro.train(data), 999999)
 
 
 outputResults(); 
