@@ -1,4 +1,3 @@
-var R = require('ramda');
 var NeuroNet = require('./Netconstructor.js');
 var neuro = new NeuroNet();
 var data = [
@@ -8,14 +7,16 @@ var data = [
     {input: [1, 1], output: [0]},
 ]
 
-neuro.init()
-	 .load('nn.dat').then(()=>{
-		neuro.train(data).save('nn.dat');
-		outputResults(); 
-	 })
-
 var outputResults = () => 
     data.forEach((item) => 
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.run(item.input)} (expected ${item.output})`));
+
+neuro.init()
+	 .train(data)
+	 .save('nn.dat')
+	 .then(()=>{
+			outputResults(); 
+	 });
+
 
 
