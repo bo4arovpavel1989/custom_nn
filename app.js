@@ -8,14 +8,14 @@ var data = [
     {input: [1, 1], output: [0]},
 ]
 
-neuro.init();
+neuro.init()
+	 .load('nn.dat').then(()=>{
+		neuro.train(data).save('nn.dat');
+		outputResults(); 
+	 })
 
 var outputResults = () => 
     data.forEach((item) => 
-                 console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.nn(item.input)} (expected ${item.output})`));
+                 console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.run(item.input)} (expected ${item.output})`));
 
 
-R.times(() => neuro.train(data), 999999)
-
-
-outputResults(); 
