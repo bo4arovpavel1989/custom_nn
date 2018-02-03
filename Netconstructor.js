@@ -12,6 +12,7 @@ function NeuroNet(){
 		output:1,
 		activation:'sigmoid',
 		max_iteration: 90000,
+		use_best: true,
 		est_error: 0.0005,
 		min_e_result_data:'min_err_res_data.dat'
 	};
@@ -38,32 +39,34 @@ NeuroNet.prototype.getInitialWeights = require('./lib/get_initial_weights.js');
 
 NeuroNet.prototype.run = require('./lib/run.js');
 
-NeuroNet.prototype.getError = require('./lib/get_error.js');
-
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
 NeuroNet.prototype.train = function(data){
-	this.min_error = this.getError(data);
 	var goalReached = false;
 	var best_weights = {};
 	
 	for (var iter = 0; iter <= this.options.max_iteration; iter++){
-		var e = this.getError(data);
 		
-		if (e < this.options.est_error) { 
+		if(!this.min_error) this.min_error = this.error;
+			
+		if (this.error < this.min_error) {
+			this.min_error = this.error;
+			best_weights = this.weights;
+		}
+		
+		if (this.error < this.options.est_error) { 
 			goalReached = true;
 			break;
-		}	
-		
-		if (e < this.min_error) {
-			this.min_error = e;
-			best_weights = this.weights;
-		}	
+		}		
 		
 		this.train_once(data);
 	}
 	
-	if (!goalReached) this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+	if (!goalReached && this.options.use_best) {
+		console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
+		this.weights = best_weights;
+		this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+	}	
 	
 	return this;
 }

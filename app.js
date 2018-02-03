@@ -12,11 +12,16 @@ var outputResults = () =>
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.run(item.input)} (expected ${item.output})`));
 
 neuro.init()
-	 .train(data)
-	 .save('nn.dat')
+	 .load('nn.dat')
 	 .then(()=>{
-			outputResults(); 
+		 neuro.train(data)
+			 .save('nn.dat')
+			 .then(()=>{
+					outputResults(); 
+					console.log(neuro);
+			 }); 
 	 });
+	
 
 
 
