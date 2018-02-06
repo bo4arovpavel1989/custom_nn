@@ -7,7 +7,7 @@ function NeuroNet(){
 	this.min_error;
 	this.defaults = {
 		hidden:1,
-		hidden_size:2,
+		hidden_sizes:[2],
 		input:2,
 		output:1,
 		activation:'sigmoid',
@@ -36,6 +36,8 @@ NeuroNet.prototype.init = function(options){
 }
 
 NeuroNet.prototype.getInitialWeights = require('./lib/get_initial_weights.js');
+
+NeuroNet.prototype.selfCheck = require('./lib/self_check.js');
 
 NeuroNet.prototype.run = require('./lib/run.js');
 
