@@ -11,9 +11,10 @@ function NeuroNet(){
 		input:2,
 		output:1,
 		activation:'sigmoid',
-		max_iteration: 90000,
+		max_iteration: 9999999,
 		use_best: true,
-		est_error: 0.0005,
+		est_error: 0.00000000005,
+		console_logging: 1000,
 		min_e_result_data:'min_err_res_data.dat'
 	};
 }
@@ -62,6 +63,9 @@ NeuroNet.prototype.train = function(data){
 		}		
 		
 		this.train_once(data);
+		
+		if(iter % this.options.console_logging == 0) 
+			console.log(`Iteration №${iter}\nerror: ${this.error}\n weights: ${JSON.stringify(this.weights)}`);
 	}
 	
 	if (!goalReached && this.options.use_best) {
