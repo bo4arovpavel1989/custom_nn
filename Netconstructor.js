@@ -10,11 +10,19 @@ function NeuroNet(){
 		hidden_sizes:[2],
 		input:2,
 		output:1,
+		learn_rate: 0.5,
 		activation:'sigmoid',
 		max_iteration: 9999999,
 		use_best: true,
 		est_error: 0.00000000005,
-		console_logging: 1000,
+		console_logging: {
+			show: true,
+			step: 1000,
+			show_iter: true,
+			show_error: true,
+			show_weights: false,
+			show_w_deltas: false
+		},
 		min_e_result_data:'min_err_res_data.dat'
 	};
 }
@@ -30,9 +38,16 @@ NeuroNet.prototype.save = require('./lib/fs_handler.js').save;
 NeuroNet.prototype.init = function(options){
 	this.options = options || {};
 	for (let opt in this.defaults){
-		if(!this.options[opt]) this.options[opt]=this.defaults[opt]
+		if(typeof(this.options[opt]) == 'object') {
+			console.log(this.options[opt])
+			for (let inner_opt in this.defaults[opt]) {
+				if(!this.options[opt][inner_opt]) this.options[opt][inner_opt] = this.defaults[opt][inner_opt]; //defaults for console-logging options
+			}
+		}
+		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaualts for other options
 	}
 	this.weights = this.weights || this.getInitialWeights(this.options);
+	console.log(this);
 	return this;
 }
 
@@ -41,6 +56,8 @@ NeuroNet.prototype.getInitialWeights = require('./lib/get_initial_weights.js');
 NeuroNet.prototype.selfCheck = require('./lib/self_check.js');
 
 NeuroNet.prototype.run = require('./lib/run.js');
+
+NeuroNet.prototype.show_progress = require('./lib/show_progress.js')
 
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
@@ -64,8 +81,7 @@ NeuroNet.prototype.train = function(data){
 		
 		this.train_once(data);
 		
-		if(iter % this.options.console_logging == 0) 
-			console.log(`Iteration №${iter}\nerror: ${this.error}\n weights: ${JSON.stringify(this.weights)}`);
+		this.show_progress(iter);
 	}
 	
 	if (!goalReached && this.options.use_best) {
