@@ -10,7 +10,7 @@ function NeuroNet(){
 		hidden_sizes:[2],
 		input:2,
 		output:1,
-		learn_rate: 0.5,
+		learn_rate: 0.7,
 		activation:'sigmoid',
 		max_iteration: 9999999,
 		use_best: true,
@@ -47,7 +47,7 @@ NeuroNet.prototype.init = function(options){
 		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaualts for other options
 	}
 	this.weights = this.weights || this.getInitialWeights(this.options);
-	console.log(this);
+	
 	return this;
 }
 
