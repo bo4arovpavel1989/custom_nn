@@ -12,6 +12,7 @@ function NeuroNet(){
 		output:1,
 		learn_rate: 0.7,
 		activation:'sigmoid',
+		initial_weights:'standard',
 		max_iteration: 9999999,
 		use_best: true,
 		est_error: 0.00000000005,
