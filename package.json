@@ -19,6 +19,5 @@
   "dependencies": {
     "lodash": "^4.17.5",
     "q": "^1.5.1",
-    "seed-random": "^2.2.0"
-  }
+    "random-seed": "^0.3.0"  }
 }

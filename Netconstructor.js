@@ -12,10 +12,10 @@ function NeuroNet(){
 		output:1,
 		learn_rate: 0.7,
 		activation:'sigmoid',
-		initial_weights:'standard',
-		max_iteration: 9999999,
+		initial_weights:'standard', //'widrow'
+		max_iteration: 99999,
 		use_best: true,
-		est_error: 0.00000000005,
+		est_error: 0.005,
 		console_logging: {
 			show: true,
 			step: 1000,
@@ -47,7 +47,7 @@ NeuroNet.prototype.init = function(options){
 		}
 		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaualts for other options
 	}
-	this.weights = this.weights || this.getInitialWeights(this.options);
+	this.weights = this.weights || this.getInitialWeights();
 	
 	return this;
 }
