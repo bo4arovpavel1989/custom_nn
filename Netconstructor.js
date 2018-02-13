@@ -11,8 +11,8 @@ function NeuroNet(){
 		input:2,
 		output:1,
 		learn_rate: 0.7,
-		activation:'sigmoid',
-		initial_weights:'standard', //'widrow'
+		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
+		initial_weights:'standard', //'standard', 'widrow'
 		max_iteration: 99999,
 		use_best: true,
 		est_error: 0.005,
