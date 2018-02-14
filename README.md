@@ -4,6 +4,8 @@
 custom_nn is a JavaScript neural network library. Here's an example of using it to approximate the XOR function:
 
 
+```
+
 var NeuroNet = require('./Netconstructor.js');
 
 
@@ -29,7 +31,8 @@ var outputResults = () =>
 neuro.init() .train(data).save('nn.dat')
 .then(()=>{
 outputResults()}); 
-		
+	
+```	
  
 Methods
 
