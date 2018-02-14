@@ -1,4 +1,4 @@
-#custom_nn
+# custom_nn
 
 
 custom_nn is a JavaScript neural network library. Here's an example of using it to approximate the XOR function:
