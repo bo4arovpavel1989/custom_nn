@@ -1,5 +1,4 @@
 function NeuroNet(){
-	this.data;
 	this.weights;
 	this.weight_deltas;
 	this.options;
@@ -14,7 +13,7 @@ function NeuroNet(){
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
 		max_iteration: 99999,
-		use_best: true,
+		use_best: true, //save best resut if goal wasnt reached
 		est_error: 0.005,
 		console_logging: {
 			show: true,
@@ -29,7 +28,14 @@ function NeuroNet(){
 }
 
 NeuroNet.prototype.setData = function(d){
-	this.data=d;
+	if (typeof(d) == 'object') return d;
+	else if (typeof(d) == 'string') {
+		var fs = require('fs')
+		var data = fs.readFileSync(d,'utf-8')
+		console.log(data);
+		console.log(typeof(data));
+		return JSON.parse(data);
+	}
 }
 
 NeuroNet.prototype.load = require('./lib/fs_handler.js').load;
@@ -65,6 +71,8 @@ NeuroNet.prototype.train_once = require('./lib/train.js');
 NeuroNet.prototype.train = function(data){
 	var goalReached = false;
 	var best_weights = {};
+	
+	data = this.setData(data);
 	
 	for (var iter = 0; iter <= this.options.max_iteration; iter++){
 		
