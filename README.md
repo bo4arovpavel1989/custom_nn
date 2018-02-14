@@ -48,7 +48,7 @@ These options are DEFAULT:
 
 
 ```javascript
-net.train({
+neuro.init({
 
 	hidden:1,  //number of hidden layers
 
