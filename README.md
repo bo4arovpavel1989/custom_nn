@@ -45,6 +45,8 @@ neuro.init() takes a hash of options as its first argument.
 These options are DEFAULT:
 
 
+```
+
 net.train({
 
 hidden:1,  //number of hidden layers
@@ -87,6 +89,7 @@ min_e_result_data:'min_err_res_data.dat' //path to save data of best error if es
 })
 
 
+```
 The network will train until the training error has gone below the threshold (default 0.005) or the max number of epochs (default 99999) has been reached, whichever comes first.
 
 
