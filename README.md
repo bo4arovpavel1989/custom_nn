@@ -39,7 +39,7 @@ neuro.init()
 ## Methods
 
 
-** neuro.init(options) **
+**neuro.init(options)**
 
 
 neuro.init() takes a hash of options as its first argument. 
