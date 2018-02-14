@@ -46,48 +46,44 @@ neuro.init() takes a hash of options as its first argument.
 These options are DEFAULT:
 
 
-```
-
+```javascript
 net.train({
 
-hidden:1,  //number of hidden layers
+	hidden:1,  //number of hidden layers
 
-hidden_sizes:[2], //sizes of each hidden layer
+	hidden_sizes:[2], //sizes of each hidden layer
 
-input:2, //size of input array
+	input:2, //size of input array
 	
-output:1, //size of output array
+	output:1, //size of output array
 
-learn_rate: 0.7, //learning rate
+	learn_rate: 0.7, //learning rate
 		
-activation:'sigmoid', //activation fucntion. available: 'sigmoid', 'bipolar_sigmoid'
+	activation:'sigmoid', //activation fucntion. available: 'sigmoid', 'bipolar_sigmoid'
 		
-initial_weights:'standard', //initial weight set mode: 'standard', 'widrow'
+	initial_weights:'standard', //initial weight set mode: 'standard', 'widrow'
 		
-max_iteration: 99999, //maximum numbers of epochs
+	max_iteration: 99999, //maximum numbers of epochs
 		
-use_best: true, //save best resut if goal wasnt reached
+	use_best: true, //save best resut if goal wasnt reached
 		
-est_error: 0.005, //error to reach
-		
-console_logging: { //console logging options
+	est_error: 0.005, //error to reach
+,		
+	min_e_result_data:'min_err_res_data.dat', //path to save data of best error if estimated error wasnt reached	
+	console_logging: { //console logging options
 			
-show: true, //turn console logging on/off
+		show: true, //turn console logging on/off
 			
-step: 1000, //period of console logging
+		step: 1000, //period of console logging
 			
-show_iter: true, //show number of epoch
+		show_iter: true, //show number of epoch
 			
-show_error: true, //show current error
+		show_error: true, //show current error
 			
-show_weights: false, //show current weights
+		show_weights: false, //show current weights
 			
-show_w_deltas: false //show last weight deltas
-	},
-		
-min_e_result_data:'min_err_res_data.dat' //path to save data of best error if estimated error wasnt reached
-
-})
+		show_w_deltas: false //show last weight deltas
+	}})
 
 
 ```
