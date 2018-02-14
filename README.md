@@ -32,15 +32,14 @@ var outputResults = () =>
 neuro.init()
 	.train(data)
 	.save('nn.dat')
-	.then(()=>{
-outputResults()}); 
+	.then(()=>{outputResults()}); 
 	
 ```	
  
-Methods
+## Methods
 
 
-neuro.init(options)
+** neuro.init(options) **
 
 
 neuro.init() takes a hash of options as its first argument. 
@@ -63,15 +62,16 @@ net.train({
 		
 	activation:'sigmoid', //activation fucntion. available: 'sigmoid', 'bipolar_sigmoid'
 		
-	initial_weights:'standard', //initial weight set mode: 'standard', 'widrow'
+	initial_weights:'standard', //initial weight set mode. available 'standard', 'widrow'
 		
 	max_iteration: 99999, //maximum numbers of epochs
 		
 	use_best: true, //save best resut if goal wasnt reached
 		
-	est_error: 0.005, //error to reach
-,		
+	est_error: 0.005, //error threshold
+		
 	min_e_result_data:'min_err_res_data.dat', //path to save data of best error if estimated error wasnt reached	
+	
 	console_logging: { //console logging options
 			
 		show: true, //turn console logging on/off
