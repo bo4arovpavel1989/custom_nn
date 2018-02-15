@@ -95,10 +95,10 @@ neuro.init({
 
 
 **neuro.train(data_source)**
-	THe network starts training, using data from data_source. it can be filename either javascript object. 
-
-Training ends wether error threshold or max_epoch number is reached. After training you can handle net whatever you want/
+	THe network starts training, using data from data_source. it can be filename either javascript object. Training ends wether error threshold or max_epoch number is reached. After training you can handle net whatever you want.
+	
 **neuro.save(filename)**
 	Save current network in file. The method returns promise.
+	
 **neuro.load(filename)**
 	Load saved network from file. The method returns promise.
