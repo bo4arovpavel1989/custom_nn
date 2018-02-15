@@ -12,7 +12,7 @@ function NeuroNet(){
 		learn_rate: 0.7,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
-		max_iteration: 99999,
+		max_epoch: 99999,
 		use_best: true, //save best resut if goal wasnt reached
 		est_error: 0.005,
 		console_logging: {
@@ -74,7 +74,7 @@ NeuroNet.prototype.train = function(data){
 	
 	data = this.setData(data);
 	
-	for (var iter = 0; iter <= this.options.max_iteration; iter++){
+	for (var iter = 0; iter <= this.options.max_epoch; iter++){
 		
 		if(!this.min_error) this.min_error = this.error;
 			
