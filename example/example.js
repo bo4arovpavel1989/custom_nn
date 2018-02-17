@@ -13,7 +13,7 @@ var outputResults = () =>
     data.forEach((item) => 
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.run(item.input)} (expected ${item.output})`));
 
-neuro.init()
+neuro.init({hidden:2,hidden_sizes:[2,2]})
 	 .train(data)
 	 .save('nn.dat')
 	 .then(()=>{

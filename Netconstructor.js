@@ -1,9 +1,18 @@
+
 function NeuroNet(){
 	this.weights;
 	this.weight_deltas;
+	this.nodes;
+	this.inputs;
 	this.options;
 	this.error;
 	this.min_error;
+	this.square_errors;
+	this.act;
+	this.der;
+	this.o_delta;
+	this.h_delta;
+	this.lr;
 	this.defaults = {
 		hidden:1,
 		hidden_sizes:[2],
@@ -12,9 +21,9 @@ function NeuroNet(){
 		learn_rate: 0.7,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
-		max_epoch: 99999,
+		max_epoch: 20000,
 		use_best: true, //save best resut if goal wasnt reached
-		est_error: 0.005,
+		est_error: 0.05,
 		console_logging: {
 			show: true,
 			step: 1000,
@@ -43,7 +52,10 @@ NeuroNet.prototype.load = require('./lib/fs_handler.js').load;
 NeuroNet.prototype.save = require('./lib/fs_handler.js').save;
 
 NeuroNet.prototype.init = function(options){
+	var activation = require('./lib/activation.js');
+	
 	this.options = options || {};
+	
 	for (let opt in this.defaults){
 		if(typeof(this.options[opt]) == 'object') {
 			console.log(this.options[opt])
@@ -53,7 +65,11 @@ NeuroNet.prototype.init = function(options){
 		}
 		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaualts for other options
 	}
+	
 	this.weights = this.weights || this.getInitialWeights();
+	this.act = activation[this.options.activation],
+	this.der = activation[`derivative_${this.options.activation}`];
+	this.lr = this.options.learn_rate;
 	
 	return this;
 }
@@ -71,6 +87,7 @@ NeuroNet.prototype.train_once = require('./lib/train.js');
 NeuroNet.prototype.train = function(data){
 	var goalReached = false;
 	var best_weights = {};
+	const _ = require('lodash');
 	
 	data = this.setData(data);
 	
@@ -86,10 +103,14 @@ NeuroNet.prototype.train = function(data){
 		if (this.error < this.options.est_error) { 
 			goalReached = true;
 			break;
-		}		
+		}	
 		
-		this.train_once(data);
+		this.square_errors = [];
+		for (var {input, output} of data) {
+			this.train_once(input, output);
+		}
 		
+		this.error = _.mean(this.square_errors);
 		this.show_progress(iter);
 	}
 	

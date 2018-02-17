@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/bo4arovpavel1989/custom_nn#readme",
   "dependencies": {
-    "lodash": "^4.17.5",
+"lodash": "^4.17.5",
     "q": "^1.5.1",
-    "random-seed": "^0.3.0"  }
+    "random-seed": "^0.3.0"
+  }
 }
