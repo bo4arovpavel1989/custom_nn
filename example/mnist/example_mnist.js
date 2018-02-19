@@ -15,11 +15,16 @@ var get_i_with_max_val = function(arr){
 	return i;
 }
 
+var right = 0;
+var total = testSet.length;
 
 var outputResults = () => 
-    testSet.forEach((item) => 
-                 console.log(`${item.input[0]} XOR ${item.input[1]} => ${get_i_with_max_val(neuro.run(item.input))} (expected ${get_i_with_max_val(item.output)})`));
+    testSet.forEach((item) => {
+                 console.log(`${get_i_with_max_val(neuro.run(item.input))} (expected ${get_i_with_max_val(item.output)})`);
+				 if (get_i_with_max_val(neuro.run(item.input)) == get_i_with_max_val(item.output)) right++;
+	})
 
+	
 /*
 neuro.init({input:784,hidden_sizes:[392],output:10,console_logging:{step:1}})
 	 .train(trainingSet)
@@ -33,5 +38,6 @@ neuro.init()
 	 .load('mnist_net.dat')
 	 .then(()=>{
 		 outputResults(); 
+		 console.log((right/total) * 100)
 	 })
 

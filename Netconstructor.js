@@ -23,7 +23,7 @@ function NeuroNet(){
 		initial_weights:'standard', //'standard', 'widrow'
 		max_epoch: 20000,
 		use_best: true, //save best resut if goal wasnt reached
-		est_error: 0.05,
+		est_error: 0.005,
 		console_logging: {
 			show: true,
 			step: 1000,
