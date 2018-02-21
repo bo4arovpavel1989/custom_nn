@@ -91,7 +91,23 @@ NeuroNet.prototype.train = function(data){
 	
 	data = this.setData(data);
 	
+	this.weight_deltas = {};
+	
 	for (var iter = 0; iter <= this.options.max_epoch; iter++){
+		this.square_errors = [];
+			
+		for (let w in this.weights){
+			this.weight_deltas[w] = 0;
+		}
+		
+		for (var {input, output} of data) {
+			this.train_once(input, output);
+		}
+		
+		this.applyTrainUpdate();
+				
+		this.error = _.mean(this.square_errors);
+		this.show_progress(iter);
 		
 		if(!this.min_error) this.min_error = this.error;
 			
@@ -104,14 +120,7 @@ NeuroNet.prototype.train = function(data){
 			goalReached = true;
 			break;
 		}	
-		
-		this.square_errors = [];
-		for (var {input, output} of data) {
-			this.train_once(input, output);
-		}
-		
-		this.error = _.mean(this.square_errors);
-		this.show_progress(iter);
+
 	}
 	
 	if (!goalReached && this.options.use_best) {
