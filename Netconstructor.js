@@ -82,6 +82,14 @@ NeuroNet.prototype.run = require('./lib/run.js');
 
 NeuroNet.prototype.show_progress = require('./lib/show_progress.js')
 
+NeuroNet.prototype.o_calc = require('./lib/layer_calc.js').o;
+
+NeuroNet.prototype.lh_calc = require('./lib/layer_calc.js').lh;
+
+NeuroNet.prototype.h_calc = require('./lib/layer_calc.js').h;
+
+NeuroNet.prototype.i_calc = require('./lib/layer_calc.js').i;
+
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
 NeuroNet.prototype.train = function(data){
