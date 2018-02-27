@@ -1,4 +1,4 @@
-
+var async = require('async');
 function NeuroNet(){
 	this.weights;
 	this.weight_deltas;
@@ -24,6 +24,7 @@ function NeuroNet(){
 		max_epoch: 20000,
 		use_best: true, //save best resut if goal wasnt reached
 		est_error: 0.005,
+		streams_num:40,
 		console_logging: {
 			show: true,
 			step: 1000,
@@ -93,51 +94,58 @@ NeuroNet.prototype.i_calc = require('./lib/layer_calc.js').i;
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
 NeuroNet.prototype.train = function(data){
-	var goalReached = false;
-	var best_weights = {};
-	const _ = require('lodash');
-	
-	data = this.setData(data);
-	
-	this.weight_deltas = {};
-	
-	for (var iter = 0; iter <= this.options.max_epoch; iter++){
+	return new Promise((resolve=>{
+		var iter = 0;
+		var goalReached = false;
+		var best_weights = {};
+		const _ = require('lodash');
+		
+		data = this.setData(data);
+		
+		this.weight_deltas = {};
+		
 		this.square_errors = [];
-			
+				
 		for (let w in this.weights){
 			this.weight_deltas[w] = 0;
-		}
-		
-		for (var {input, output} of data) {
-			this.train_once(input, output);
-		}
-		
-		this.applyTrainUpdate();
-				
-		this.error = _.mean(this.square_errors);
-		this.show_progress(iter);
-		
-		if(!this.min_error) this.min_error = this.error;
-			
-		if (this.error < this.min_error) {
-			this.min_error = this.error;
-			best_weights = this.weights;
-		}
-		
-		if (this.error < this.options.est_error) { 
-			goalReached = true;
-			break;
 		}	
-
-	}
-	
-	if (!goalReached && this.options.use_best) {
-		console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
-		this.weights = best_weights;
-		this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
-	}	
-	
-	return this;
+		async.eachOfLimit(data,this.options.streams_num, 
+		((item, key, callback)=>{
+			this.train_once(item.input, item.output);
+			callback();
+		}).bind(this),
+		((err)=>{
+			console.log(err);
+			iter++;
+			this.applyTrainUpdate();
+			this.error = _.mean(this.square_errors);
+			this.show_progress(iter);
+			this.square_errors = [];
+			
+			if(!this.min_error) this.min_error = this.error;
+				
+			if (this.error < this.min_error) {
+				this.min_error = this.error;
+				best_weights = this.weights;
+			}
+			
+			if (this.error < this.options.est_error) { 
+				goalReached = true;
+				resolve();
+			}		
+			for (let w in this.weights){
+				this.weight_deltas[w] = 0;
+			}
+			if (iter == this.options.max_epoch) {
+					if (!goalReached && this.options.use_best) {
+					console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
+					this.weights = best_weights;
+					this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+				}
+				resolve();
+			} 
+		}).bind(this))
+	}).bind(this))
 }
 
 
