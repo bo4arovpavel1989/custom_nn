@@ -114,8 +114,10 @@ NeuroNet.prototype.train = function(data){
 			async.eachOfLimit(data,this.options.streams_num, 
 				
 				(item, key, callback)=>{
-					this.train_once(item.input, item.output);
+					process.nextTick(()=>{
+							this.train_once(item.input, item.output);
 					callback();
+					});
 				},
 				
 				(err)=>{
