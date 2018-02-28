@@ -26,7 +26,7 @@ var outputResults = () =>
 
 	
 
-neuro.init({input:784,hidden_sizes:[100],output:10,console_logging:{step:1}})
+neuro.init({input:784,hidden_sizes:[392],output:10,activation:'relu',console_logging:{step:1}})
 	 .train(trainingSet)
 	 .then(()=>{
 			outputResults(); 

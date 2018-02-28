@@ -15,9 +15,10 @@ var outputResults = () =>
 
 neuro.init({hidden:2,hidden_sizes:[2,2]})
 	 .train(data)
-	 .save('nn.dat')
 	 .then(()=>{
 			outputResults(); 
+		 },(err)=>{
+			 console.log(err);
 		 }); 
 	
 

@@ -1,4 +1,10 @@
 var async = require('async');
+var _thaw = require('thaw.js');
+
+var _thaw2 = _interopRequireDefault(_thaw);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function NeuroNet(){
 	this.weights;
 	this.weight_deltas;
@@ -111,12 +117,54 @@ NeuroNet.prototype.train = function(data){
 				this.weight_deltas[w] = 0;
 			}	
 			
+			var thawedTrain = new _thaw2.default(data,{
+				each:(item)=>{
+					this.train_once(item.input, item.output);
+				},
+				done:()=>{
+					iter++;
+					this.applyTrainUpdate();
+					this.error = _.mean(this.square_errors);
+					this.show_progress(iter);
+					this.square_errors = [];
+					
+					if(!this.min_error) this.min_error = this.error;
+						
+					if (this.error < this.min_error) {
+						this.min_error = this.error;
+						best_weights = this.weights;
+					}
+					
+					if (this.error < this.options.est_error) { 
+						goalReached = true;
+						resolve();
+					}		
+					for (let w in this.weights){
+						this.weight_deltas[w] = 0;
+					}
+					if (iter >= this.options.max_epoch) {
+							if (!goalReached && this.options.use_best) {
+							console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
+							this.weights = best_weights;
+							this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+						}
+						resolve();
+					} else {
+						if(!goalReached)
+						recursive(iter);
+					}
+				
+				}
+			});
+			
+			thawedTrain.tick();
+			/*
 			async.eachOfLimit(data,this.options.streams_num, 
 				
 				(item, key, callback)=>{
 					process.nextTick(()=>{
-							this.train_once(item.input, item.output);
-					callback();
+						this.train_once(item.input, item.output);
+						callback();
 					});
 				},
 				
@@ -152,8 +200,9 @@ NeuroNet.prototype.train = function(data){
 						recursive(iter);
 					}
 				
-				})
+			})*/
 		};
+		
 		
 		recursive(0);
 		
