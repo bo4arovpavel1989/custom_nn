@@ -24,7 +24,7 @@ function NeuroNet(){
 		max_epoch: 20000,
 		use_best: true, //save best resut if goal wasnt reached
 		est_error: 0.005,
-		streams_num:40,
+		streams_num:400,
 		console_logging: {
 			show: true,
 			step: 1000,
@@ -94,8 +94,7 @@ NeuroNet.prototype.i_calc = require('./lib/layer_calc.js').i;
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
 NeuroNet.prototype.train = function(data){
-	return new Promise((resolve=>{
-		var iter = 0;
+	return new Promise(resolve=>{
 		var goalReached = false;
 		var best_weights = {};
 		const _ = require('lodash');
@@ -104,54 +103,69 @@ NeuroNet.prototype.train = function(data){
 		
 		this.weight_deltas = {};
 		
-		this.square_errors = [];
-				
-		for (let w in this.weights){
-			this.weight_deltas[w] = 0;
-		}	
-		async.eachOfLimit(data,this.options.streams_num, 
-		((item, key, callback)=>{
-			this.train_once(item.input, item.output);
-			callback();
-		}).bind(this),
-		((err)=>{
-			console.log(err);
-			iter++;
-			this.applyTrainUpdate();
-			this.error = _.mean(this.square_errors);
-			this.show_progress(iter);
+		let recursive  = (iter)=>{
+		
 			this.square_errors = [];
-			
-			if(!this.min_error) this.min_error = this.error;
-				
-			if (this.error < this.min_error) {
-				this.min_error = this.error;
-				best_weights = this.weights;
-			}
-			
-			if (this.error < this.options.est_error) { 
-				goalReached = true;
-				resolve();
-			}		
+					
 			for (let w in this.weights){
 				this.weight_deltas[w] = 0;
-			}
-			if (iter == this.options.max_epoch) {
-					if (!goalReached && this.options.use_best) {
-					console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
-					this.weights = best_weights;
-					this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
-				}
-				resolve();
-			} 
-		}).bind(this))
-	}).bind(this))
+			}	
+			
+			async.eachOfLimit(data,this.options.streams_num, 
+				
+				(item, key, callback)=>{
+					this.train_once(item.input, item.output);
+					callback();
+				},
+				
+				(err)=>{
+					iter++;
+					this.applyTrainUpdate();
+					this.error = _.mean(this.square_errors);
+					this.show_progress(iter);
+					this.square_errors = [];
+					
+					if(!this.min_error) this.min_error = this.error;
+						
+					if (this.error < this.min_error) {
+						this.min_error = this.error;
+						best_weights = this.weights;
+					}
+					
+					if (this.error < this.options.est_error) { 
+						goalReached = true;
+						resolve();
+					}		
+					for (let w in this.weights){
+						this.weight_deltas[w] = 0;
+					}
+					if (iter >= this.options.max_epoch) {
+							if (!goalReached && this.options.use_best) {
+							console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
+							this.weights = best_weights;
+							this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+						}
+						resolve();
+					} else {
+						recursive(iter);
+					}
+				
+				})
+		};
+		
+		recursive(0);
+		
+		
+	})
+	
 }
 
 
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
-    Object.keys(this.weights).forEach(key => this.weights[key] += this.weight_deltas[key]);
+	for (key in this.weights) {
+		this.weights[key] += this.weight_deltas[key]
+	}
 }
 
 module.exports = NeuroNet;
