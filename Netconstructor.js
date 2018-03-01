@@ -7,8 +7,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function NeuroNet(){
 	this.weights;
+	this.biases;
 	this.weight_deltas;
 	this.nodes;
+	this.layers;
 	this.inputs;
 	this.options;
 	this.error;
@@ -73,7 +75,9 @@ NeuroNet.prototype.init = function(options){
 		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaualts for other options
 	}
 	
+	this.setLayers();
 	this.weights = this.weights || this.getInitialWeights();
+	this.biases = this.biases || this.getInitialBiases();
 	this.act = activation[this.options.activation],
 	this.der = activation[`derivative_${this.options.activation}`];
 	this.lr = this.options.learn_rate;
@@ -83,7 +87,11 @@ NeuroNet.prototype.init = function(options){
 
 NeuroNet.prototype.getInitialWeights = require('./lib/get_initial_weights.js');
 
+NeuroNet.prototype.getInitialBiases = require('./lib/get_initial_biases.js');
+
 NeuroNet.prototype.selfCheck = require('./lib/self_check.js');
+
+NeuroNet.prototype.setLayers = require('./lib/set_layers.js');
 
 NeuroNet.prototype.run = require('./lib/run.js');
 
