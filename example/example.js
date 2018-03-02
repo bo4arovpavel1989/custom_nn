@@ -15,11 +15,8 @@ var outputResults = () =>
 
 neuro.init({hidden:2,hidden_sizes:[2,2]})
 	 .train(data)
-	 .then(()=>{
-			outputResults(); 
-		 },(err)=>{
-			 console.log(err);
-		 }); 
+	 .then(()=>{},
+	 (err)=>(console.log(err)));
 	
 
 

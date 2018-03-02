@@ -8,10 +8,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function NeuroNet(){
 	this.weights;
 	this.biases;
+	this.zero_w_deltas;
+	this.zero_b_deltas;
 	this.w_deltas;
 	this.b_deltas;
 	this.nodes;
-	this.inputs;
 	this.options;
 	this.error;
 	this.min_error;
@@ -110,20 +111,18 @@ NeuroNet.prototype.train_once = require('./lib/train.js');
 NeuroNet.prototype.train = function(data){
 	return new Promise(resolve=>{
 		var goalReached = false;
-		var best_weights = {};
+		var best_weights = [];
+		var best_biases = [];
 		const _ = require('lodash');
 		
 		data = this.setData(data);
-		
-		this.weight_deltas = {};
-		
+
 		let recursive  = (iter)=>{
 		
 			this.square_errors = [];
-					
-			for (let w in this.weights){
-				this.weight_deltas[w] = 0;
-			}	
+			
+			this.w_deltas = this.zero_w_deltas;
+			this.b_deltas = this.zero_b_deltas;
 			
 			var thawedTrain = new _thaw2.default(data,{
 				each:(item)=>{
@@ -131,7 +130,6 @@ NeuroNet.prototype.train = function(data){
 				},
 				done:()=>{
 					iter++;
-					this.applyTrainUpdate();
 					this.error = _.mean(this.square_errors);
 					this.show_progress(iter);
 					this.square_errors = [];
@@ -141,19 +139,24 @@ NeuroNet.prototype.train = function(data){
 					if (this.error < this.min_error) {
 						this.min_error = this.error;
 						best_weights = this.weights;
+						best_biases = this.biases;
 					}
 					
 					if (this.error < this.options.est_error) { 
 						goalReached = true;
 						resolve();
 					}		
-					for (let w in this.weights){
-						this.weight_deltas[w] = 0;
-					}
+					
+					this.applyTrainUpdate();
+					
+					this.w_deltas = this.zero_w_deltas;
+					this.b_deltas = this.zero_b_deltas;
+					
 					if (iter >= this.options.max_epoch) {
 							if (!goalReached && this.options.use_best) {
 							console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
 							this.weights = best_weights;
+							this.biases = best_biases;
 							this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
 						}
 						resolve();
@@ -222,8 +225,16 @@ NeuroNet.prototype.train = function(data){
 
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
-	for (key in this.weights) {
-		this.weights[key] += this.weight_deltas[key]
+	for (let i = this.weights.length-1;i>=0;i--){
+		for (let j = this.weights[i].lenght-1;j>=0;j--){
+			this.biases[i][j] == this.b_deltas[i][j]
+			for (let k = this.weights[i][j].length-1;k>=0;k--){
+				this.weights[i][j][k] += this.w_deltas[i][j][k];
+			}
+		}
+	}
+	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){
+		this.biases[this.biases.length-1][i] += this.b_deltas[this.biases.length-1][i];
 	}
 }
 
