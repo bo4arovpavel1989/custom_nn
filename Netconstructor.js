@@ -8,9 +8,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function NeuroNet(){
 	this.weights;
 	this.biases;
-	this.weight_deltas;
+	this.w_deltas;
+	this.b_deltas;
 	this.nodes;
-	this.layers;
 	this.inputs;
 	this.options;
 	this.error;
