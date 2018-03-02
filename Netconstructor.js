@@ -79,6 +79,8 @@ NeuroNet.prototype.init = function(options){
 	this.setLayers();
 	this.weights = this.weights || this.getInitialWeights();
 	this.biases = this.biases || this.getInitialBiases();
+	//TODO make zero_w_deltas and aero_b_deltas init
+	
 	this.act = activation[this.options.activation],
 	this.der = activation[`derivative_${this.options.activation}`];
 	this.lr = this.options.learn_rate;
@@ -121,8 +123,8 @@ NeuroNet.prototype.train = function(data){
 		
 			this.square_errors = [];
 			
-			this.w_deltas = this.zero_w_deltas;
-			this.b_deltas = this.zero_b_deltas;
+			this.w_deltas = JSON.parse(JSON.stringify(this.zero_w_deltas));
+			this.b_deltas = JSON.parse(JSON.stringify(this.zero_b_deltas));
 			
 			var thawedTrain = new _thaw2.default(data,{
 				each:(item)=>{

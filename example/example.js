@@ -14,10 +14,9 @@ var outputResults = () =>
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.run(item.input)} (expected ${item.output})`));
 
 neuro.init({hidden:2,hidden_sizes:[2,2]})
-/*
 	 .train(data)
 	 .then(()=>{},
-	 (err)=>(console.log(err)));*/
+	 (err)=>(console.log(err)));
 	
 
 
