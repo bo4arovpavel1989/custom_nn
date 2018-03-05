@@ -8,8 +8,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function NeuroNet(){
 	this.weights;
 	this.biases;
-	this.zero_w_deltas;
-	this.zero_b_deltas;
 	this.w_deltas;
 	this.b_deltas;
 	this.nodes;
@@ -118,13 +116,14 @@ NeuroNet.prototype.train = function(data){
 		const _ = require('lodash');
 		
 		data = this.setData(data);
-
+		
+		this.w_deltas = JSON.parse(JSON.stringify(this.zero_w_deltas));
+		this.b_deltas = JSON.parse(JSON.stringify(this.zero_b_deltas));
+		
 		let recursive  = (iter)=>{
 		
 			this.square_errors = [];
 			
-			this.w_deltas = JSON.parse(JSON.stringify(this.zero_w_deltas));
-			this.b_deltas = JSON.parse(JSON.stringify(this.zero_b_deltas));
 			
 			var thawedTrain = new _thaw2.default(data,{
 				each:(item)=>{
@@ -232,11 +231,13 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 			this.biases[i][j] == this.b_deltas[i][j]
 			for (let k = this.weights[i][j].length-1;k>=0;k--){
 				this.weights[i][j][k] += this.w_deltas[i][j][k];
+				this.w_deltas[i][j][k] = 0;
 			}
 		}
 	}
 	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){
 		this.biases[this.biases.length-1][i] += this.b_deltas[this.biases.length-1][i];
+		this.b_deltas[this.biases.length-1][i] = 0;
 	}
 }
 
