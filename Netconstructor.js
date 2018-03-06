@@ -29,7 +29,7 @@ function NeuroNet(){
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
 		max_epoch: 20000,
-		use_best: true, //save best resut if goal wasnt reached
+		use_best: false, //save best resut if goal wasnt reached
 		est_error: 0.005,
 		streams_num:400,
 		console_logging: {
@@ -48,9 +48,7 @@ NeuroNet.prototype.setData = function(d){
 	if (typeof(d) == 'object') return d;
 	else if (typeof(d) == 'string') {
 		var fs = require('fs')
-		var data = fs.readFileSync(d,'utf-8')
-		console.log(data);
-		console.log(typeof(data));
+		var data = fs.readFileSync(d,'utf-8');
 		return JSON.parse(data);
 	}
 }
@@ -66,7 +64,6 @@ NeuroNet.prototype.init = function(options){
 	
 	for (let opt in this.defaults){
 		if(typeof(this.options[opt]) == 'object') {
-			console.log(this.options[opt])
 			for (let inner_opt in this.defaults[opt]) {
 				if(!this.options[opt][inner_opt]) this.options[opt][inner_opt] = this.defaults[opt][inner_opt]; //defaults for console-logging options
 			}
@@ -97,14 +94,6 @@ NeuroNet.prototype.setLayers = require('./lib/set_layers.js');
 NeuroNet.prototype.run = require('./lib/run.js');
 
 NeuroNet.prototype.show_progress = require('./lib/show_progress.js')
-
-NeuroNet.prototype.o_calc = require('./lib/layer_calc.js').o;
-
-NeuroNet.prototype.lh_calc = require('./lib/layer_calc.js').lh;
-
-NeuroNet.prototype.h_calc = require('./lib/layer_calc.js').h;
-
-NeuroNet.prototype.i_calc = require('./lib/layer_calc.js').i;
 
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
@@ -137,10 +126,10 @@ NeuroNet.prototype.train = function(data){
 					
 					if(!this.min_error) this.min_error = this.error;
 						
-					if (this.error < this.min_error) {
+					if (this.error < this.min_error && this.options.use_best) {
 						this.min_error = this.error;
-						best_weights = this.weights;
-						best_biases = this.biases;
+						best_weights =  JSON.parse(JSON.stringify(this.weights));
+						best_biases =  JSON.parse(JSON.stringify(this.biases));
 					}
 					
 					if (this.error < this.options.est_error) { 
@@ -149,9 +138,6 @@ NeuroNet.prototype.train = function(data){
 					}		
 					
 					this.applyTrainUpdate();
-					
-					this.w_deltas = this.zero_w_deltas;
-					this.b_deltas = this.zero_b_deltas;
 					
 					if (iter >= this.options.max_epoch) {
 							if (!goalReached && this.options.use_best) {
@@ -167,58 +153,12 @@ NeuroNet.prototype.train = function(data){
 					}
 				
 				}
-			});
-			
+			});		
 			thawedTrain.tick();
-			/*
-			async.eachOfLimit(data,this.options.streams_num, 
-				
-				(item, key, callback)=>{
-					process.nextTick(()=>{
-						this.train_once(item.input, item.output);
-						callback();
-					});
-				},
-				
-				(err)=>{
-					iter++;
-					this.applyTrainUpdate();
-					this.error = _.mean(this.square_errors);
-					this.show_progress(iter);
-					this.square_errors = [];
-					
-					if(!this.min_error) this.min_error = this.error;
-						
-					if (this.error < this.min_error) {
-						this.min_error = this.error;
-						best_weights = this.weights;
-					}
-					
-					if (this.error < this.options.est_error) { 
-						goalReached = true;
-						resolve();
-					}		
-					for (let w in this.weights){
-						this.weight_deltas[w] = 0;
-					}
-					if (iter >= this.options.max_epoch) {
-							if (!goalReached && this.options.use_best) {
-							console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
-							this.weights = best_weights;
-							this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
-						}
-						resolve();
-					} else {
-						recursive(iter);
-					}
-				
-			})*/
 		};
-		
-		
+				
 		recursive(0);
-		
-		
+				
 	})
 	
 }
@@ -227,8 +167,9 @@ NeuroNet.prototype.train = function(data){
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
 	for (let i = this.weights.length-1;i>=0;i--){
-		for (let j = this.weights[i].lenght-1;j>=0;j--){
-			this.biases[i][j] == this.b_deltas[i][j]
+		for (let j = this.weights[i].length-1;j>=0;j--){
+			this.biases[i][j] += this.b_deltas[i][j];
+			this.b_deltas[i][j] = 0;
 			for (let k = this.weights[i][j].length-1;k>=0;k--){
 				this.weights[i][j][k] += this.w_deltas[i][j][k];
 				this.w_deltas[i][j][k] = 0;

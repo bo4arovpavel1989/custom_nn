@@ -1,6 +1,6 @@
 var NeuroNet = require('./../../Netconstructor.js');
 var mnist = require('./mnist.js')
-const set = mnist.set(100, 20);
+const set = mnist.set(60000, 1000);
 
 const trainingSet = set.training;
 var testSet = set.test;
