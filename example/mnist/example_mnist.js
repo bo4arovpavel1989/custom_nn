@@ -1,10 +1,11 @@
 var NeuroNet = require('./../../Netconstructor.js');
 var mnist = require('./mnist.js')
-const set = mnist.set(60000, 1000);
+const set = mnist.set(1000, 10);
 
 const trainingSet = set.training;
 var testSet = set.test;
 
+console.log(trainingSet.length)
 var neuro = new NeuroNet();
 
 var get_i_with_max_val = function(arr){

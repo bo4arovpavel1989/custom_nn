@@ -131,14 +131,14 @@ NeuroNet.prototype.train = function(data){
 						best_weights =  JSON.parse(JSON.stringify(this.weights));
 						best_biases =  JSON.parse(JSON.stringify(this.biases));
 					}
-					
+										
 					if (this.error < this.options.est_error) { 
 						goalReached = true;
 						resolve();
 					}		
 					
 					this.applyTrainUpdate();
-					
+							
 					if (iter >= this.options.max_epoch) {
 							if (!goalReached && this.options.use_best) {
 							console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
@@ -168,16 +168,16 @@ NeuroNet.prototype.train = function(data){
 NeuroNet.prototype.applyTrainUpdate = function (){ 
 	for (let i = this.weights.length-1;i>=0;i--){
 		for (let j = this.weights[i].length-1;j>=0;j--){
-			this.biases[i][j] += this.b_deltas[i][j];
+			this.biases[i][j] += this.lr * this.b_deltas[i][j];
 			this.b_deltas[i][j] = 0;
 			for (let k = this.weights[i][j].length-1;k>=0;k--){
-				this.weights[i][j][k] += this.w_deltas[i][j][k];
+				this.weights[i][j][k] += this.lr * this.w_deltas[i][j][k];
 				this.w_deltas[i][j][k] = 0;
 			}
 		}
 	}
 	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){
-		this.biases[this.biases.length-1][i] += this.b_deltas[this.biases.length-1][i];
+		this.biases[this.biases.length-1][i] += this.lr * this.b_deltas[this.biases.length-1][i];
 		this.b_deltas[this.biases.length-1][i] = 0;
 	}
 }
