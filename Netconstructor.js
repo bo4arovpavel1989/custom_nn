@@ -26,6 +26,7 @@ function NeuroNet(){
 		input:2,
 		output:1,
 		learn_rate: 0.7,
+		batch:1,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
 		max_epoch: 20000,
@@ -98,8 +99,8 @@ NeuroNet.prototype.show_progress = require('./lib/show_progress.js')
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
 NeuroNet.prototype.train = function(data){
-	return new Promise(resolve=>{
 		var goalReached = false;
+		var iter = 0;
 		var best_weights = [];
 		var best_biases = [];
 		const _ = require('lodash');
@@ -109,58 +110,41 @@ NeuroNet.prototype.train = function(data){
 		this.w_deltas = JSON.parse(JSON.stringify(this.zero_w_deltas));
 		this.b_deltas = JSON.parse(JSON.stringify(this.zero_b_deltas));
 		
-		let recursive  = (iter)=>{
-		
+		while(!goalReached && iter <= this.options.max_epoch){
+			iter++;
+			
 			this.square_errors = [];
 			
+			for (let step = data.length - 1; step >=0; step--){
+				this.train_once(data[step].input, data[step].output, step);
+			}
 			
-			var thawedTrain = new _thaw2.default(data,{
-				each:(item)=>{
-					this.train_once(item.input, item.output);
-				},
-				done:()=>{
-					iter++;
-					this.error = _.mean(this.square_errors);
-					this.show_progress(iter);
-					this.square_errors = [];
-					
-					if(!this.min_error) this.min_error = this.error;
-						
-					if (this.error < this.min_error && this.options.use_best) {
-						this.min_error = this.error;
-						best_weights =  JSON.parse(JSON.stringify(this.weights));
-						best_biases =  JSON.parse(JSON.stringify(this.biases));
-					}
+			
+			this.error = _.mean(this.square_errors);
+			this.show_progress(iter);
+			this.square_errors = [];
+			
+			if(!this.min_error) this.min_error = this.error;
+				
+			if (this.error < this.min_error && this.options.use_best) {
+				this.min_error = this.error;
+				best_weights =  JSON.parse(JSON.stringify(this.weights));
+				best_biases =  JSON.parse(JSON.stringify(this.biases));
+			}
 										
-					if (this.error < this.options.est_error) { 
-						goalReached = true;
-						resolve();
-					}		
-					
-					this.applyTrainUpdate();
-							
-					if (iter >= this.options.max_epoch) {
-							if (!goalReached && this.options.use_best) {
-							console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
-							this.weights = best_weights;
-							this.biases = best_biases;
-							this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
-						}
-						resolve();
-					} else {
-						if(!goalReached)
-						recursive(iter);
-					}
-				
-				}
-			});		
-			thawedTrain.tick();
-		};
-				
-		recursive(0);
-				
-	})
-	
+			if (this.error < this.options.est_error) { 
+				goalReached = true;
+			}		
+		}
+		
+		if (!goalReached && this.options.use_best) {
+			console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
+			this.weights = best_weights;
+			this.biases = best_biases;
+			this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+		}
+		
+	return this;
 }
 
 
