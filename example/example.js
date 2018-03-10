@@ -13,7 +13,7 @@ var outputResults = () =>
     data.forEach((item) => 
                  console.log(`${item.input[0]} XOR ${item.input[1]} => ${neuro.run(item.input)} (expected ${item.output})`));
 
-neuro.init({hidden:2,hidden_sizes:[10,8],batch:2})
+neuro.init({hidden:2,activation:'bipolar_sigmoid',hidden_sizes:[10,8],batch:1,max_epoch:99999999})
 	 .train(data)
 	 
 	 outputResults();

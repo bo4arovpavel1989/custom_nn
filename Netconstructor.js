@@ -1,9 +1,4 @@
-var async = require('async');
-var _thaw = require('thaw.js');
-
-var _thaw2 = _interopRequireDefault(_thaw);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+const _ = require('lodash');
 
 function NeuroNet(){
 	this.weights;
@@ -13,12 +8,9 @@ function NeuroNet(){
 	this.nodes;
 	this.options;
 	this.error;
-	this.min_error;
 	this.square_errors;
 	this.act;
 	this.der;
-	this.o_delta;
-	this.h_delta;
 	this.lr;
 	this.defaults = {
 		hidden:1,
@@ -30,9 +22,7 @@ function NeuroNet(){
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
 		max_epoch: 20000,
-		use_best: false, //save best resut if goal wasnt reached
 		est_error: 0.005,
-		streams_num:400,
 		console_logging: {
 			show: true,
 			step: 1000,
@@ -40,8 +30,7 @@ function NeuroNet(){
 			show_error: true,
 			show_weights: false,
 			show_w_deltas: false
-		},
-		min_e_result_data:'min_err_res_data.dat'
+		}
 	};
 }
 
@@ -101,14 +90,12 @@ NeuroNet.prototype.train_once = require('./lib/train.js');
 NeuroNet.prototype.train = function(data){
 		var goalReached = false;
 		var iter = 0;
-		var best_weights = [];
-		var best_biases = [];
-		const _ = require('lodash');
 		
 		data = this.setData(data);
-		
-		this.w_deltas = JSON.parse(JSON.stringify(this.zero_w_deltas));
-		this.b_deltas = JSON.parse(JSON.stringify(this.zero_b_deltas));
+		let timestamps = [];
+		let prev = Date.now();
+		let now;
+		timestamps.push(prev);
 		
 		while(!goalReached && iter <= this.options.max_epoch){
 			iter++;
@@ -119,29 +106,16 @@ NeuroNet.prototype.train = function(data){
 				this.train_once(data[step].input, data[step].output, step);
 			}
 			
-			
 			this.error = _.mean(this.square_errors);
 			this.show_progress(iter);
-			this.square_errors = [];
-			
-			if(!this.min_error) this.min_error = this.error;
-				
-			if (this.error < this.min_error && this.options.use_best) {
-				this.min_error = this.error;
-				best_weights =  JSON.parse(JSON.stringify(this.weights));
-				best_biases =  JSON.parse(JSON.stringify(this.biases));
-			}
 										
 			if (this.error < this.options.est_error) { 
 				goalReached = true;
-			}		
-		}
-		
-		if (!goalReached && this.options.use_best) {
-			console.log(`The goal wasnt reached. Best error result is ${this.min_error}.`)
-			this.weights = best_weights;
-			this.biases = best_biases;
-			this.save(this.options.min_e_result_data) //save best result if goal wasnt reached
+			}	
+			
+			now = Date.now();
+			console.log('time for epoch: ' + ((now-prev)/60000).toFixed(2) + 'm.');
+			prev = now;
 		}
 		
 	return this;
@@ -160,7 +134,7 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 			}
 		}
 	}
-	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){
+	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){ //apply biases of output layer
 		this.biases[this.biases.length-1][i] += this.lr * this.b_deltas[this.biases.length-1][i];
 		this.b_deltas[this.biases.length-1][i] = 0;
 	}

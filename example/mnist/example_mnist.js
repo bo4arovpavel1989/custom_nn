@@ -29,13 +29,8 @@ var outputResults = () =>
 
 neuro.init({input:784,hidden_sizes:[392],output:10,console_logging:{step:1}})
 	 .train(trainingSet)
-	 .then(()=>{
 			outputResults(); 
 			console.log((right/total) * 100)
-		 },
-		 (err)=>{
-			 console.log(err)
-		 }); 
 	
 /*
 neuro.init()
