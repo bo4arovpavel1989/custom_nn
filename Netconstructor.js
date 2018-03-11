@@ -17,7 +17,7 @@ function NeuroNet(){
 		hidden_sizes:[2],
 		input:2,
 		output:1,
-		learn_rate: 0.7,
+		learn_rate: 0.3,
 		batch:1,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
@@ -124,7 +124,7 @@ NeuroNet.prototype.train = function(data){
 
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
-	for (let i = this.weights.length-1;i>=0;i--){
+	for (let i = 0; i < this.weights.length; i++){
 		for (let j = this.weights[i].length-1;j>=0;j--){
 			this.biases[i][j] += this.lr * this.b_deltas[i][j];
 			this.b_deltas[i][j] = 0;

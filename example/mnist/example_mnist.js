@@ -1,6 +1,6 @@
 var NeuroNet = require('./../../Netconstructor.js');
 var mnist = require('./mnist.js')
-const set = mnist.set(60000, 1000);
+const set = mnist.set(1000, 10);
 
 const trainingSet = set.training;
 var testSet = set.test;
@@ -27,7 +27,7 @@ var outputResults = () =>
 
 	
 
-neuro.init({input:784,hidden_sizes:[392],output:10,console_logging:{step:1}})
+neuro.init({input:784,hidden_sizes:[392],output:10,batch:1,console_logging:{step:1}})
 	 .train(trainingSet)
 			outputResults(); 
 			console.log((right/total) * 100)
