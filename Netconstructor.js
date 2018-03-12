@@ -5,6 +5,7 @@ function NeuroNet(){
 	this.biases;
 	this.w_deltas;
 	this.b_deltas;
+	this.errors;
 	this.nodes;
 	this.options;
 	this.error;
