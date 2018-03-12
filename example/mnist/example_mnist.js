@@ -27,7 +27,7 @@ var outputResults = () =>
 
 	
 
-neuro.init({input:784,hidden_sizes:[392],output:10,batch:5,console_logging:{step:1}})
+neuro.init({input:784,hidden_sizes:[392],output:10,batch:1,console_logging:{step:1}})
 	 .train(trainingSet)
 			outputResults(); 
 			console.log((right/total) * 100)
