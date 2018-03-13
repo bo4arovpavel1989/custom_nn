@@ -93,10 +93,6 @@ NeuroNet.prototype.train = function(data){
 		var iter = 0;
 		
 		data = this.setData(data);
-		let timestamps = [];
-		let prev = Date.now();
-		let now;
-		timestamps.push(prev);
 		
 		while(!goalReached && iter <= this.options.max_epoch){
 			iter++;
@@ -111,12 +107,9 @@ NeuroNet.prototype.train = function(data){
 			this.show_progress(iter);
 										
 			if (this.error < this.options.est_error) { 
+				console.log(this.error)
 				goalReached = true;
 			}	
-			
-			now = Date.now();
-			console.log('time for epoch: ' + ((now-prev)/60000).toFixed(2) + 'm.');
-			prev = now;
 		}
 		
 	return this;
