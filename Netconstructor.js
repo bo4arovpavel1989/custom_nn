@@ -121,16 +121,16 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 	for (let i = 0; i < this.weights.length; i++){
 		for (let j = this.weights[i].length-1;j>=0;j--){
 			this.biases[i][j] += this.lr * this.b_deltas[i][j];
-			this.b_deltas[i][j] = 0;
+			this.b_deltas[i][j] = 0.0;
 			for (let k = this.weights[i][j].length-1;k>=0;k--){
 				this.weights[i][j][k] += this.lr * this.w_deltas[i][j][k];
-				this.w_deltas[i][j][k] = 0;
+				this.w_deltas[i][j][k] = 0.0;
 			}
 		}
 	}
 	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){ //apply biases of output layer
 		this.biases[this.biases.length-1][i] += this.lr * this.b_deltas[this.biases.length-1][i];
-		this.b_deltas[this.biases.length-1][i] = 0;
+		this.b_deltas[this.biases.length-1][i] = 0.0;
 	}
 }
 
