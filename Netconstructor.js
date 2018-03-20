@@ -3,8 +3,10 @@ const _ = require('lodash');
 function NeuroNet(){
 	this.weights;
 	this.biases;
+	this.beta; //for widrow weight init
 	this.w_deltas;
 	this.b_deltas;
+	this.w_moment;
 	this.errors;
 	this.nodes;
 	this.options;
@@ -19,6 +21,7 @@ function NeuroNet(){
 		input:2,
 		output:1,
 		learn_rate: 0.3,
+		moment:0.1,
 		batch:1,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
@@ -119,11 +122,16 @@ NeuroNet.prototype.train = function(data){
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
 	for (let i = 0; i < this.weights.length; i++){
-		for (let j = this.weights[i].length-1;j>=0;j--){
+		
+		for (let j = this.weights[i].length-1; j>=0; j--){
 			this.biases[i][j] += this.lr * this.b_deltas[i][j];
 			this.b_deltas[i][j] = 0.0;
-			for (let k = this.weights[i][j].length-1;k>=0;k--){
-				this.weights[i][j][k] += this.lr * this.w_deltas[i][j][k];
+			
+			for (let k = this.weights[i][j].length-1; k>=0; k--){
+				let adjust = this.w_moment[i][j][k];
+				adjust = this.lr * this.w_deltas[i][j][k] + this.options.moment * adjust;
+				this.w_moment[i][j][k] = adjust;
+				this.weights[i][j][k] += adjust;
 				this.w_deltas[i][j][k] = 0.0;
 			}
 		}
