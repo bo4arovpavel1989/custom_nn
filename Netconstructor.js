@@ -23,6 +23,7 @@ function NeuroNet(){
 		learn_rate: 0.3,
 		moment:0.1,
 		batch:1,
+		csv:false,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
 		max_epoch: 20000,
@@ -43,13 +44,16 @@ NeuroNet.prototype.setData = function(d){
 	else if (typeof(d) == 'string') {
 		var fs = require('fs')
 		var data = fs.readFileSync(d,'utf-8');
-		return JSON.parse(data);
+		if(this.options.csv) return this.getCSVData(data);
+		else return JSON.parse(data);
 	}
 }
 
 NeuroNet.prototype.load = require('./lib/fs_handler.js').load;
 
 NeuroNet.prototype.save = require('./lib/fs_handler.js').save;
+
+NeuroNet.prototype.getCSVData = require('./lib/fs_handler.js').getCSVData;
 
 NeuroNet.prototype.init = function(options){
 	var activation = require('./lib/activation.js');
