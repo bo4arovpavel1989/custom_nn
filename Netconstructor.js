@@ -96,6 +96,7 @@ NeuroNet.prototype.train = function(data){
 		
 		data = this.setData(data);
 		
+		console.log(data.length)
 		while(!goalReached && iter <= this.options.max_epoch){
 			iter++;
 			
@@ -104,7 +105,6 @@ NeuroNet.prototype.train = function(data){
 			for (let step = data.length - 1; step >=0; step--){
 				this.train_once(data[step].input, data[step].output, step);
 			}
-			
 			this.error = _.mean(this.square_errors);
 			this.show_progress(iter);
 										
