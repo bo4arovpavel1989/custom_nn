@@ -16,8 +16,7 @@ function NeuroNet(){
 	this.der;
 	this.lr;
 	this.defaults = {
-		hidden:1,
-		hidden_sizes:[2],
+		hidden:[2],
 		input:2,
 		output:1,
 		learn_rate: 0.3,
@@ -71,9 +70,7 @@ NeuroNet.prototype.init = function(options){
 	
 	this.setLayers();
 	this.weights = this.weights || this.getInitialWeights();
-	this.biases = this.biases || this.getInitialBiases();
-	//TODO make zero_w_deltas and aero_b_deltas init
-	
+	this.biases = this.biases || this.getInitialBiases();	
 	this.act = activation[this.options.activation],
 	this.der = activation[`derivative_${this.options.activation}`];
 	this.lr = this.options.learn_rate;
@@ -84,8 +81,6 @@ NeuroNet.prototype.init = function(options){
 NeuroNet.prototype.getInitialWeights = require('./lib/get_initial_weights.js');
 
 NeuroNet.prototype.getInitialBiases = require('./lib/get_initial_biases.js');
-
-NeuroNet.prototype.selfCheck = require('./lib/self_check.js');
 
 NeuroNet.prototype.setLayers = require('./lib/set_layers.js');
 
