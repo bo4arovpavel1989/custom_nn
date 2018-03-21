@@ -58,7 +58,7 @@ neuro.init({
 
 	learn_rate: 0.7, //learning rate
 		
-	activation:'sigmoid', //activation fucntion. available: 'sigmoid', 'bipolar_sigmoid'
+	activation:'sigmoid', //activation fucntion. available: 'sigmoid', 'bipolar_sigmoid', 'relu', 'leaky_relu'
 	
 	moment:0.1, //momentum param for weight adjusting during training
 	
@@ -87,10 +87,11 @@ neuro.init({
 
 
 ```	
-	The network will train until the training error has gone below the threshold (default 0.005) or the max number of epochs (default 99999) has been reached, whichever comes first.
+
+The network will train until the training error has gone below the threshold (default 0.005) or the max number of epochs (default 99999) has been reached, whichever comes first.
 
 
-	The learning rate is a parameter that influences how quickly the network trains. It's a number from 0 to 1. If the learning rate is close to 0 it will take longer to train. If the learning rate is closer to 1 it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is 0.7.
+The learning rate is a parameter that influences how quickly the network trains. It's a number from 0 to 1. If the learning rate is close to 0 it will take longer to train. If the learning rate is closer to 1 it will train faster but it's in danger of training to a local minimum and performing badly on new data. The default learning rate is 0.7.
 
 
 **neuro.train(data_source)**
