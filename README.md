@@ -50,9 +50,7 @@ These options are DEFAULT:
 ```javascript
 neuro.init({
 
-	hidden:1,  //number of hidden layers
-
-	hidden_sizes:[2], //sizes of each hidden layer
+	hidden:[2],  //array defining number of hidden layers and their sizes
 
 	input:2, //size of input array
 	
@@ -61,15 +59,16 @@ neuro.init({
 	learn_rate: 0.7, //learning rate
 		
 	activation:'sigmoid', //activation fucntion. available: 'sigmoid', 'bipolar_sigmoid'
+	
+	moment:0.1, //momentum param for weight adjusting during training
+	
+	csv: false, //use this param to retrieve training data from csv. it will use first n (n = 'input' option) values as input and other as outputin each line 
 		
 	initial_weights:'standard', //initial weight set mode. available 'standard', 'widrow'
 		
 	max_epoch: 99999, //maximum numbers of epochs
-		
-	use_best: true, //save best resut if error threshold wasnt reached	
+	
 	est_error: 0.005, //error threshold
-		
-	min_e_result_data:'min_err_res_data.dat', //path to save data of best error if estimated error wasnt reached	
 	
 	console_logging: { //console logging options
 			
