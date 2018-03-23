@@ -11,6 +11,7 @@ function NeuroNet(){
 	this.nodes;
 	this.options;
 	this.error;
+	this.test_error;
 	this.square_errors;
 	this.act;
 	this.der;
@@ -22,6 +23,7 @@ function NeuroNet(){
 		learn_rate: 0.3,
 		moment:0.1,
 		batch:1,
+		test:0, //calculate test error during training every n epoch. dy default n = 0, so it doesnt calculate at all
 		csv:false,
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
@@ -32,6 +34,7 @@ function NeuroNet(){
 			step: 1000,
 			show_iter: true,
 			show_error: true,
+			show_test_error: false,
 			show_weights: false,
 			show_w_deltas: false
 		}
@@ -90,13 +93,12 @@ NeuroNet.prototype.show_progress = require('./lib/show_progress.js')
 
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
-NeuroNet.prototype.train = function(data){
+NeuroNet.prototype.train = function(data, testData){
 		var goalReached = false;
 		var iter = 0;
 		
 		data = this.setData(data);
 		
-		console.log(data.length)
 		while(!goalReached && iter <= this.options.max_epoch){
 			iter++;
 			
@@ -105,9 +107,13 @@ NeuroNet.prototype.train = function(data){
 			for (let step = data.length - 1; step >=0; step--){
 				this.train_once(data[step].input, data[step].output, step);
 			}
+			
 			this.error = _.mean(this.square_errors);
+			if(this.options.test > 0 && iter % this.options.test === 0) 
+				this.test(testData);
+			
 			this.show_progress(iter);
-										
+			
 			if (this.error < this.options.est_error) { 
 				console.log(this.error)
 				goalReached = true;
@@ -117,7 +123,21 @@ NeuroNet.prototype.train = function(data){
 	return this;
 }
 
-
+NeuroNet.prototype.test = function(data){
+	data = this.setData(data);
+	let square_errors = [];
+	
+	for (let step = data.length - 1; step >=0; step--){
+		let output = this.run(data[step].input);
+		let target = data[step].output;
+		target.forEach((t,index) => {
+			square_errors.push((t - output[index])**2)
+		})
+	}
+	this.test_error = _.mean(square_errors);
+		
+	return this;
+}
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
 	for (let i = 0; i < this.weights.length; i++){
