@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const fs = require('fs');
+const activation = require('./lib/activation.js');
 
 function NeuroNet(){
 	this.weights;
@@ -42,9 +44,8 @@ function NeuroNet(){
 }
 
 NeuroNet.prototype.setData = function(d){
-	if (typeof(d) == 'object') return d;
-	else if (typeof(d) == 'string') {
-		var fs = require('fs')
+	if (typeof(d) === 'object') return d;
+	else if (typeof(d) === 'string') {
 		var data = fs.readFileSync(d,'utf-8');
 		if(this.options.csv) return this.getCSVData(data);
 		else return JSON.parse(data);
@@ -58,17 +59,15 @@ NeuroNet.prototype.save = require('./lib/fs_handler.js').save;
 NeuroNet.prototype.getCSVData = require('./lib/fs_handler.js').getCSVData;
 
 NeuroNet.prototype.init = function(options){
-	var activation = require('./lib/activation.js');
-	
 	this.options = options || {};
 	
 	for (let opt in this.defaults){
 		if(typeof(this.options[opt]) == 'object') {
 			for (let inner_opt in this.defaults[opt]) {
-				if(!this.options[opt][inner_opt]) this.options[opt][inner_opt] = this.defaults[opt][inner_opt]; //defaults for console-logging options
+				if(!this.options[opt][inner_opt]) this.options[opt][inner_opt] = this.defaults[opt][inner_opt]; //defaults for array and object options
 			}
 		}
-		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaualts for other options
+		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaults for other options
 	}
 	
 	this.setLayers();
@@ -94,8 +93,8 @@ NeuroNet.prototype.show_progress = require('./lib/show_progress.js')
 NeuroNet.prototype.train_once = require('./lib/train.js');
 
 NeuroNet.prototype.train = function(data, testData){
-		var goalReached = false;
-		var iter = 0;
+		let goalReached = false;
+		let iter = 0;
 		
 		data = this.setData(data);
 		
@@ -114,10 +113,8 @@ NeuroNet.prototype.train = function(data, testData){
 			
 			this.show_progress(iter);
 			
-			if (this.error < this.options.est_error) { 
-				console.log(this.error)
+			if (this.error < this.options.est_error) 
 				goalReached = true;
-			}	
 		}
 		
 	return this;
@@ -134,6 +131,7 @@ NeuroNet.prototype.test = function(data){
 			square_errors.push((t - output[index])**2)
 		})
 	}
+	
 	this.test_error = _.mean(square_errors);
 		
 	return this;
@@ -155,7 +153,8 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 			}
 		}
 	}
-	for (let i = this.biases[this.biases.length-1].length-1;i>=0;i--){ //apply biases of output layer
+	
+	for (let i = this.biases[this.biases.length-1].length-1; i>=0; i--){ //apply biases of output layer
 		this.biases[this.biases.length-1][i] += this.lr * this.b_deltas[this.biases.length-1][i];
 		this.b_deltas[this.biases.length-1][i] = 0.0;
 	}
