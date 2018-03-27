@@ -46,11 +46,14 @@ function NeuroNet(){
 }
 
 NeuroNet.prototype.setData = function(d){
-	if (typeof(d) === 'object') return d;
+	if (typeof(d) === 'object')
+		return d;
 	else if (typeof(d) === 'string') {
 		var data = fs.readFileSync(d,'utf-8');
-		if(this.options.csv) return this.getCSVData(data);
-		else return JSON.parse(data);
+		if(this.options.csv)
+			return this.getCSVData(data);
+		else
+			return JSON.parse(data);
 	}
 }
 
@@ -66,10 +69,12 @@ NeuroNet.prototype.init = function(options){
 	for (let opt in this.defaults){
 		if(typeof(this.options[opt]) == 'object') {
 			for (let inner_opt in this.defaults[opt]) {
-				if(!this.options[opt][inner_opt]) this.options[opt][inner_opt] = this.defaults[opt][inner_opt]; //defaults for array and object options
+				if(!this.options[opt][inner_opt])
+					this.options[opt][inner_opt] = this.defaults[opt][inner_opt]; //defaults for array and object options
 			}
 		}
-		else if(!this.options[opt]) this.options[opt]=this.defaults[opt] //defaults for other options
+		else if(!this.options[opt]) 
+			this.options[opt]=this.defaults[opt] //defaults for other options
 	}
 	
 	this.setLayers();
@@ -111,6 +116,7 @@ NeuroNet.prototype.train = function(data, testData){
 			}
 			
 			this.error = _.mean(this.square_errors);
+			
 			if(this.options.test > 0 && iter % this.options.test === 0) 
 				this.test(testData);
 			
@@ -130,6 +136,7 @@ NeuroNet.prototype.test = function(data){
 	for (let step = data.length - 1; step >=0; step--){
 		let output = this.run(data[step].input);
 		let target = data[step].output;
+		
 		target.forEach((t,index) => {
 			square_errors.push((t - output[index])**2)
 		})
