@@ -18,12 +18,14 @@ function NeuroNet(){
 	this.act;
 	this.der;
 	this.lr;
+	this.data_size;
 	this.defaults = {
 		hidden:[2],
 		input:2,
 		output:1,
 		learn_rate: 0.3,
 		moment:0.1,
+		l2:0, //l2 regularization coefficient
 		batch:1,
 		test:0, //calculate test error during training every n epoch. dy default n = 0, so it doesnt calculate at all
 		csv:false,
@@ -97,6 +99,7 @@ NeuroNet.prototype.train = function(data, testData){
 		let iter = 0;
 		
 		data = this.setData(data);
+		this.data_size = data.length;
 		
 		while(!goalReached && iter <= this.options.max_epoch){
 			iter++;
@@ -138,15 +141,24 @@ NeuroNet.prototype.test = function(data){
 }
 
 NeuroNet.prototype.applyTrainUpdate = function (){ 
+	let l2 = this.options.l2,
+		lr = this.lr,
+		ds = this.data_size;
+
 	for (let i = 0; i < this.weights.length; i++){
 		
 		for (let j = this.weights[i].length-1; j>=0; j--){
-			this.biases[i][j] += this.lr * this.b_deltas[i][j];
+			this.biases[i][j] += lr * this.b_deltas[i][j];
 			this.b_deltas[i][j] = 0.0;
 			
 			for (let k = this.weights[i][j].length-1; k>=0; k--){
 				let adjust = this.w_moment[i][j][k];
-				adjust = this.lr * this.w_deltas[i][j][k] + this.options.moment * adjust;
+				
+				if(l2 > 0)
+					adjust = lr * (this.w_deltas[i][j][k] + (l2/ds) * this.weights[i][j][k]) + this.options.moment * adjust;
+				else 
+					adjust = lr * this.w_deltas[i][j][k] + this.options.moment * adjust;
+				
 				this.w_moment[i][j][k] = adjust;
 				this.weights[i][j][k] += adjust;
 				this.w_deltas[i][j][k] = 0.0;
@@ -155,7 +167,7 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 	}
 	
 	for (let i = this.biases[this.biases.length-1].length-1; i>=0; i--){ //apply biases of output layer
-		this.biases[this.biases.length-1][i] += this.lr * this.b_deltas[this.biases.length-1][i];
+		this.biases[this.biases.length-1][i] += lr * this.b_deltas[this.biases.length-1][i];
 		this.b_deltas[this.biases.length-1][i] = 0.0;
 	}
 }
