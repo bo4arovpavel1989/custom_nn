@@ -62,6 +62,8 @@ neuro.init({
 	
 	moment:0.1, //momentum param for weight adjusting during training
 	
+	l2: 0, //L2 regularization coefficient. set zero if you dont use L2 regularization
+	
 	csv: false, //use this param to retrieve training and test data from csv. it will use first n (n = 'input' option) values as input and other as output values in each line of csv file
 		
 	initial_weights:'standard', //initial weight set mode. available 'standard' (random number netween -0.5 and 0.5), 'widrow' (Nguyen – Widrow method of weights init)

@@ -29,6 +29,7 @@ function NeuroNet(){
 		batch:1,
 		test:0, //calculate test error during training every n epoch. dy default n = 0, so it doesnt calculate at all
 		csv:false,
+		emergency_save:true, //save net if process was interrupted
 		activation:'sigmoid', //'sigmoid', 'bipolar_sigmoid'
 		initial_weights:'standard', //'standard', 'widrow'
 		max_epoch: 20000,
@@ -102,11 +103,14 @@ NeuroNet.prototype.train_once = require('./lib/train.js');
 NeuroNet.prototype.train = function(data, testData){
 		let goalReached = false;
 		let iter = 0;
+		this.stop = false;
 		
 		data = this.setData(data);
 		this.data_size = data.length;
 		
-		while(!goalReached && iter <= this.options.max_epoch){
+		this.saveOnExit();
+		
+		while(!goalReached && !this.stop && iter <= this.options.max_epoch){
 			iter++;
 			
 			this.square_errors = [];
@@ -177,6 +181,24 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 		this.biases[this.biases.length-1][i] += lr * this.b_deltas[this.biases.length-1][i];
 		this.b_deltas[this.biases.length-1][i] = 0.0;
 	}
+}
+
+NeuroNet.prototype.saveOnExit = function(stop){
+	process.on('SIGHUP', ()=>{
+		this.stop = true;
+		this.saveSync('emergency_save_net1.dat')
+		process.exit(128+1);
+	});
+	process.on('SIGINT', ()=>{
+		this.stop = true;
+		this.saveSync('emergency_save_net2.dat')
+		process.exit(128+2);
+	});
+	process.on('SIGQUIT', ()=>{
+		this.stop = true;
+		this.saveSync('emergency_save_net3.dat')
+		process.exit(128+3);
+	});
 }
 
 module.exports = NeuroNet;
