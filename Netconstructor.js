@@ -18,6 +18,7 @@ function NeuroNet(){
 	this.act;
 	this.der;
 	this.lr;
+	this.stop;
 	this.data_size;
 	this.defaults = {
 		hidden:[2],
@@ -62,6 +63,8 @@ NeuroNet.prototype.load = require('./lib/fs_handler.js').load;
 
 NeuroNet.prototype.save = require('./lib/fs_handler.js').save;
 
+NeuroNet.prototype.saveSync = require('./lib/fs_handler.js').saveSync;
+
 NeuroNet.prototype.getCSVData = require('./lib/fs_handler.js').getCSVData;
 
 NeuroNet.prototype.init = function(options){
@@ -103,17 +106,18 @@ NeuroNet.prototype.train_once = require('./lib/train.js');
 NeuroNet.prototype.train = function(data, testData){
 		let goalReached = false;
 		let iter = 0;
+		let max_epoch = this.options.max_epoch;
 		this.stop = false;
 		
 		data = this.setData(data);
 		this.data_size = data.length;
 		
-		this.saveOnExit();
+		this.saveOnInterrupt();
 		
-		while(!goalReached && !this.stop && iter <= this.options.max_epoch){
-			iter++;
-			
+		for (let iter = 0; iter <= max_epoch; iter++){
 			this.square_errors = [];
+			
+			if(this.stop || goalReached) break;
 			
 			for (let step = data.length - 1; step >=0; step--){
 				this.train_once(data[step].input, data[step].output, step);
@@ -183,21 +187,23 @@ NeuroNet.prototype.applyTrainUpdate = function (){
 	}
 }
 
-NeuroNet.prototype.saveOnExit = function(stop){
-	process.on('SIGHUP', ()=>{
-		this.stop = true;
-		this.saveSync('emergency_save_net1.dat')
-		process.exit(128+1);
-	});
+NeuroNet.prototype.saveOnInterrupt = function(stop){
+	if (process.platform === "win32") {
+	  var rl = require("readline").createInterface({
+		input: process.stdin,
+		output: process.stdout
+	  });
+
+	  rl.on("SIGINT", function () {
+		process.emit("SIGINT");
+	  });
+	}
+	
 	process.on('SIGINT', ()=>{
 		this.stop = true;
+		console.log('siginit')
 		this.saveSync('emergency_save_net2.dat')
-		process.exit(128+2);
-	});
-	process.on('SIGQUIT', ()=>{
-		this.stop = true;
-		this.saveSync('emergency_save_net3.dat')
-		process.exit(128+3);
+		process.exit();
 	});
 }
 

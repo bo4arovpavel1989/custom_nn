@@ -23,7 +23,7 @@ var NeuroNet = require('./../Netconstructor.js');
 
 var neuro = new NeuroNet();
 
-neuro.init({csv:true,hidden:[5,3],input:9,output:1,l2:0.001,activation:'sigmoid',batch:10,test:100,console_logging:{show_test_error:true,step:10}})
+neuro.init({csv:true,hidden:[5,3],input:9,est_error:0.01, output:1,l2:0.001,activation:'sigmoid',batch:10,test:100,console_logging:{show_test_error:true,step:10}})
 	 .train('csv-tic.csv','test.csv') //first argument - string of relative path to training data, second - relative path to test data
 	 .save('tic-tac-net.dat')
 	
